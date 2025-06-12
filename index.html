@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>Welcome Page</title>
     <style>
+        #restricted-message {
+            display: none;
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            padding: 50px;
+        }
         #content {
             display: none;
             text-align: center;
@@ -13,7 +20,14 @@
 </head>
 <body>
 
-<div id="content">Checking your location...</div>
+<div id="restricted-message">
+    Sorry, this website is only accessible outside India.
+</div>
+
+<div id="content">
+    <h1>Hello World, I am Gauravi Mittal</h1>
+    <p>Hi Everyone!</p>
+</div>
 
 <script>
     fetch('https://ipapi.co/json/')
@@ -22,17 +36,9 @@
         const userCountry = data.country;
 
         if (userCountry === 'IN') {
-          document.getElementById('content').innerHTML = `
-            <div style="color:red; font-weight:bold; text-align:center; padding: 50px;">
-              Sorry, this website is only accessible outside India.
-            </div>
-          `;
+          document.getElementById('restricted-message').style.display = 'block';
         } else {
-          fetch('main-content.html')
-            .then(res => res.text())
-            .then(html => {
-              document.getElementById('content').innerHTML = html;
-            });
+          document.getElementById('content').style.display = 'block';
         }
       })
       .catch(error => {
