@@ -16,43 +16,29 @@
             text-align: center;
             padding: 20px;
         }
-        pre {
-            background: #f4f4f4;
-            padding: 15px;
-            text-align: left;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            max-width: 90%;
-            overflow-x: auto;
-        }
     </style>
 </head>
 <body>
 
 <div id="restricted-message">
-    Sorry, this website is only accessible in the United States.
+    Sorry, this website is only accessible outside India.
 </div>
 
 <div id="content">
     <h1>Hello World, I am Gauravi Mittal</h1>
     <p>Hi Everyone!</p>
-    <p>Geolocation info:</p>
-    <pre id="geo-data">Loading...</pre>
 </div>
 
 <script>
     fetch('https://ipapi.co/json/')
       .then(response => response.json())
       .then(data => {
-        const userCountry = data.country; // ISO code: 'US'
-        const geoData = JSON.stringify(data, null, 2); // Pretty-print JSON
+        const userCountry = data.country;
 
-        if (userCountry === 'US') {
-          document.getElementById('content').style.display = 'block';
-          document.getElementById('geo-data').textContent = geoData;
-        } else {
+        if (userCountry === 'IN') {
           document.getElementById('restricted-message').style.display = 'block';
+        } else {
+          document.getElementById('content').style.display = 'block';
         }
       })
       .catch(error => {
