@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Geo-Restricted Page</title>
+    <title>Welcome Page</title>
     <style>
         #restricted-message {
             display: none;
@@ -28,11 +28,10 @@
 </div>
 
 <script>
-    // Use a free IP geolocation API (e.g., ipinfo.io or ip-api.com)
     fetch('https://ipapi.co/json/')
       .then(response => response.json())
       .then(data => {
-        const userCountry = data.country; // ISO country code, e.g., 'US', 'IN', etc.
+        const userCountry = data.country;
 
         if (userCountry === 'IN') {
           document.getElementById('content').style.display = 'block';
