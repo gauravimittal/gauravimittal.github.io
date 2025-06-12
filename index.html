@@ -1,7 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Geo-Restricted Page</title>
+    <style>
+        #restricted-message {
+            display: none;
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            padding: 50px;
+        }
+        #content {
+            display: none;
+        }
+    </style>
+</head>
 <body>
-<h1>Hello World, I am Gauravi Mittal</h1>
-<p>Hi Everyone!</p>
+<div id="restricted-message">
+    Sorry, this website is only accessible in the United States.
+</div>
+
+<div id="content">
+    <!-- Your normal site content goes here -->
+    <h1>Hello World, I am Gauravi Mittal</h1>
+    <p>Hi Everyone!</p>
+</div>
+
+<script>
+    // Use a free IP geolocation API (e.g., ipinfo.io or ip-api.com)
+    fetch('https://ipapi.co/json/')
+      .then(response => response.json())
+      .then(data => {
+        const userCountry = data.country; // ISO country code, e.g., 'US', 'IN', etc.
+
+        if (userCountry === 'IN') {
+          document.getElementById('content').style.display = 'block';
+        } else {
+          document.getElementById('restricted-message').style.display = 'block';
+        }
+      })
+      .catch(error => {
+        console.error('Geolocation failed:', error);
+        document.getElementById('restricted-message').textContent =
+          'Unable to verify your location. Access denied.';
+        document.getElementById('restricted-message').style.display = 'block';
+      });
+</script>
 </body>
 </html>
