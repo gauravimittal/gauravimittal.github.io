@@ -240,7 +240,7 @@
         }
 
         // Fetch user's IP location
-        fetch('https://ipapi.co/json/')
+        fetch('https://api.country.is/')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
