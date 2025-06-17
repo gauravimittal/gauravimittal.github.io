@@ -2,52 +2,300 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Designer Portfolio</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        #restricted-message {
-            display: none;
-            color: red;
-            font-weight: bold;
-            text-align: center;
-            padding: 50px;
+        /* Custom CSS to apply Inter font globally and some basic overrides */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light blue-gray background */
+            color: #334155; /* Dark slate text color */
         }
-        #content {
-            display: none;
-            text-align: center;
-            padding: 20px;
+        /* Smooth scrolling for anchor links */
+        html {
+            scroll-behavior: smooth;
         }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Light gray track */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #64748b; /* Darker gray thumb */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; /* Even darker on hover */
+        }
+        /* Ensure that sections take up at least view height minus header height for proper scrolling */
+        .min-h-screen-minus-header {
+            min-height: calc(100vh - 64px); /* Adjust 64px based on your header's actual height if different */
+        }
+        /* Basic animation for hero text */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down { animation: fadeInDown 0.8s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
-<div id="restricted-message">
-    Sorry, this website is only accessible outside India.
+<!-- Message for restricted users - hidden by default -->
+<div id="restricted-message" class="hidden fixed inset-0 flex items-center justify-center p-4 bg-gray-900 bg-opacity-90 z-50">
+    <div class="bg-red-700 text-white font-bold text-center p-12 text-2xl md:text-3xl rounded-lg shadow-2xl max-w-md mx-auto transform scale-105 transition duration-300 ease-in-out">
+        Sorry, this website is only accessible outside India due to regional restrictions.
+    </div>
 </div>
 
-<div id="content">
-    <h1>Hello World, I am Gauravi Mittal</h1>
-    <p>Hi Everyone!</p>
+<!-- Main content area - hidden by default until country check -->
+<div id="content" class="hidden">
+    <!-- Header Section: Navigation Bar -->
+    <header class="bg-white shadow-sm py-4 fixed w-full z-10 top-0">
+        <nav class="container mx-auto flex justify-between items-center px-4">
+            <!-- Logo/Site Title -->
+            <a href="#hero" class="text-2xl font-bold text-gray-800 rounded-lg p-2 hover:bg-gray-100 transition duration-300">Your Name</a>
+            <!-- Navigation Links -->
+            <ul class="flex space-x-6">
+                <li><a href="#about" class="text-gray-600 hover:text-indigo-600 font-medium transition duration-300 rounded-lg p-2 hover:bg-gray-100">About</a></li>
+                <li><a href="#portfolio" class="text-gray-600 hover:text-indigo-600 font-medium transition duration-300 rounded-lg p-2 hover:bg-gray-100">Portfolio</a></li>
+                <li><a href="#contact" class="text-gray-600 hover:text-indigo-600 font-medium transition duration-300 rounded-lg p-2 hover:bg-gray-100">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section: Main Introduction -->
+    <section id="hero" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-24 md:py-32 flex items-center min-h-screen-minus-header">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center text-center md:text-left gap-8">
+            <!-- Profile Image -->
+            <div class="flex-shrink-0 mb-8 md:mb-0 md:mr-12">
+                <img src="https://placehold.co/200x200/ffffff/000000?text=Profile" alt="Your Profile Picture" class="w-48 h-48 md:w-64 md:h-64 rounded-full shadow-lg border-4 border-white object-cover">
+            </div>
+            <!-- Hero Content -->
+            <div>
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-down">
+                    Hi, I'm <span class="text-yellow-300">Your Name</span>.
+                </h1>
+                <p class="text-lg md:text-2xl mb-8 opacity-90 animate-fade-in-up">
+                    A passionate <span class="font-semibold">UI/UX Designer</span> crafting intuitive and beautiful experiences.
+                </p>
+                <!-- Call to Action Button -->
+                <a href="#portfolio" class="inline-block bg-white text-indigo-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition duration-300 ease-in-out transform">
+                    View My Work
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 text-center max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">About Me</h2>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                Hello! I'm [Your Name], a designer with [Number] years of experience in creating user-centered digital products. My journey into design began with a fascination for how people interact with technology, and how thoughtful design can simplify complex tasks and enhance everyday lives.
+            </p>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                I specialize in [mention your specific skills, e.g., UI design, UX research, wireframing, prototyping, user testing, graphic design, etc.]. I thrive on solving real-world problems through design, from initial concept to final implementation, always keeping the user at the forefront of my process.
+            </p>
+            <p class="text-lg text-gray-700 leading-relaxed">
+                When I'm not designing, you can find me [mention a hobby or interest, e.g., exploring new coffee shops, hiking, reading sci-fi novels, painting, etc.]. I'm always eager to learn and grow, both personally and professionally. Let's create something amazing together!
+            </p>
+        </div>
+    </section>
+
+    <!-- Portfolio Section: Project Showcase -->
+    <section id="portfolio" class="py-16 md:py-24 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12">My Portfolio</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project Card 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 ease-in-out">
+                    <img src="https://placehold.co/600x400/e0e7ff/4338ca?text=Project+1" alt="Project 1" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Mobile App Redesign</h3>
+                        <p class="text-gray-700 text-sm mb-4">A case study on improving user flow and visual appeal for a popular mobile application.</p>
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-300">View Case Study &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 ease-in-out">
+                    <img src="https://placehold.co/600x400/e0e7ff/4338ca?text=Project+2" alt="Project 2" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">E-commerce Website UI</h3>
+                        <p class="text-gray-700 text-sm mb-4">Designed a responsive e-commerce platform with a focus on product discoverability and checkout experience.</p>
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-300">View Case Study &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 ease-in-out">
+                    <img src="https://placehold.co/600x400/e0e7ff/4338ca?text=Project+3" alt="Project 3" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Dashboard Analytics UX</h3>
+                        <p class="text-gray-700 text-sm mb-4">Created an intuitive dashboard interface for data visualization and analytics for a SaaS product.</p>
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-300">View Case Study &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 4 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 ease-in-out">
+                    <img src="https://placehold.co/600x400/e0e7ff/4338ca?text=Project+4" alt="Project 4" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Branding & Logo Design</h3>
+                        <p class="text-gray-700 text-sm mb-4">Developed a complete brand identity, including logo, color palette, and typography guidelines.</p>
+                        <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-300">View Case Study &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Add more project cards as needed -->
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">Get In Touch</h2>
+            <p class="text-lg text-gray-700 text-center mb-12">
+                Have a project in mind or just want to say hello? Feel free to reach out!
+            </p>
+
+            <form action="YOUR_FORM_SUBMISSION_ENDPOINT" method="POST" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                    <input type="text" id="name" name="name" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Your Name" required>
+                </div>
+                <div>
+                    <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="email" name="email" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="your.email@example.com" required>
+                </div>
+                <div>
+                    <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Message</label>
+                    <textarea id="message" name="message" rows="6" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Tell me about your project or inquiry..." required></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:scale-105 transition duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+            <p class="text-center text-gray-600 mt-8 text-sm">
+                Alternatively, you can email me directly at <a href="mailto:your.email@example.com" class="text-indigo-600 hover:underline">your.email@example.com</a> or connect on <a href="YOUR_LINKEDIN_PROFILE" target="_blank" class="text-indigo-600 hover:underline">LinkedIn</a>.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4">&copy; <span id="current-year"></span> Your Name. All rights reserved.</p>
+            <!-- Social Media Links (Optional) -->
+            <div class="flex justify-center space-x-6">
+                <a href="YOUR_DRIBBBLE_LINK" target="_blank" class="text-gray-400 hover:text-white transition duration-300">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <!-- Dribbble Icon SVG (example, replace with actual) -->
+                        <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm8.136 10.362c-.752 5.097-4.708 8.87-9.619 8.653-5.06-.217-9.08-4.38-8.863-9.44.216-5.06 4.378-9.08 9.438-8.863 4.912.217 8.868 4.167 9.619 9.07zm-2.88 1.488a.75.75 0 01-.15.827c-.886.828-1.926 1.458-3.085 1.879-1.16.42-2.383.614-3.593.578-.857-.024-1.696-.15-2.493-.377a.75.75 0 01-.482-1.396c.642.183 1.303.284 1.977.307.72.025 1.442-.08 2.155-.326 1.25-.436 2.373-1.076 3.39-1.996a.75.75 0 01.827-.15z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                <a href="YOUR_BEHANCE_LINK" target="_blank" class="text-gray-400 hover:text-white transition duration-300">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <!-- Behance Icon SVG (example, replace with actual) -->
+                        <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10 10-4.477 10-10zm-6.666-2.222H9.333V9.111h6c.444 0 .811.367.811.811v2.222c0 .444-.367.811-.811.811H9.333V13h6c.444 0 .811.367.811.811v2.222c0 .444-.367.811-.811.811H9.333V17h6.667c.444 0 .811.367.811.811v.444h.444V9.111h-.444v.444c0-.444-.367-.811-.811-.811zM7 8.444V16h1.333V8.444H7zm-.889 0H5.111V16H6.111v-7.556z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                <a href="YOUR_LINKEDIN_LINK" target="_blank" class="text-gray-400 hover:text-white transition duration-300">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <!-- LinkedIn Icon SVG (example, replace with actual) -->
+                        <path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
 </div>
 
+<!-- JavaScript for dynamic elements and geo-restriction -->
 <script>
-    fetch('https://ipapi.co/json/')
-      .then(response => response.json())
-      .then(data => {
-        const userCountry = data.country;
+    document.addEventListener('DOMContentLoaded', () => {
+        const restrictedMessage = document.getElementById('restricted-message');
+        const contentDiv = document.getElementById('content');
+        const currentYearSpan = document.getElementById('current-year');
 
-        if (userCountry === 'IN') {
-          document.getElementById('restricted-message').style.display = 'block';
-        } else {
-          document.getElementById('content').style.display = 'block';
+        // Set the current year in the footer (if content is displayed)
+        if (currentYearSpan) {
+            currentYearSpan.textContent = new Date().getFullYear();
         }
-      })
-      .catch(error => {
-        console.error('Geolocation failed:', error);
-        document.getElementById('restricted-message').textContent =
-          'Unable to verify your location. Access denied.';
-        document.getElementById('restricted-message').style.display = 'block';
-      });
-</script>
 
+        // Fetch user's IP location
+        fetch('https://ipapi.co/json/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const userCountry = data.country_code; // Use country_code for ISO 3166-1 alpha-2 codes
+
+                if (userCountry === 'IN') {
+                    // If in India, show the restricted message and clear content
+                    restrictedMessage.classList.remove('hidden');
+                    contentDiv.innerHTML = ''; // Clear the content to make it harder to inspect
+                    // Optionally hide scrollbars for a completely blocked view
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    // If not in India, show the content
+                    contentDiv.classList.remove('hidden');
+                    document.body.style.overflow = 'auto'; // Ensure scrollbars are visible
+                }
+            })
+            .catch(error => {
+                console.error('Geolocation failed or API error:', error);
+                // In case of error, show a more specific error message and deny access
+                restrictedMessage.querySelector('div').textContent = 'Unable to verify your location. Access denied.';
+                restrictedMessage.classList.remove('hidden');
+                contentDiv.innerHTML = ''; // Clear content even on error
+                document.body.style.overflow = 'hidden';
+            });
+
+        // Smooth scrolling for navigation links (optional, as CSS scroll-behavior is used)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Only apply smooth scroll if content is visible (i.e., not restricted)
+                if (!contentDiv.classList.contains('hidden')) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        // Offset to account for fixed header height
+                        const headerOffset = document.querySelector('header').offsetHeight;
+                        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                        const offsetPosition = elementPosition - headerOffset;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
