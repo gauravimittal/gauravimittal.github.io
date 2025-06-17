@@ -248,7 +248,7 @@
                 return response.json();
             })
             .then(data => {
-                const userCountry = data.country_code; // Use country_code for ISO 3166-1 alpha-2 codes
+                const userCountry = data.country;
 
                 if (userCountry === 'IN') {
                     // If in India, show the restricted message and clear content
@@ -264,11 +264,8 @@
             })
             .catch(error => {
                 console.error('Geolocation failed or API error:', error);
-                // In case of error, show a more specific error message and deny access
-                restrictedMessage.querySelector('div').textContent = 'Unable to verify your location. Access denied.';
-                restrictedMessage.classList.remove('hidden');
-                contentDiv.innerHTML = ''; // Clear content even on error
-                document.body.style.overflow = 'hidden';
+                contentDiv.classList.remove('hidden');
+                document.body.style.overflow = 'auto';
             });
 
         // Smooth scrolling for navigation links (optional, as CSS scroll-behavior is used)
