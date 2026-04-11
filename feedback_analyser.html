@@ -631,7 +631,18 @@ Feedback: "${feedbackText}"`;
       });
 
       const data = await res.json();
-      const result = JSON.parse(data.content[0].text.replace(/```json|```/g, '').trim());
+      // Show raw response in console so we can debug
+      console.log('Proxy response:', data);
+    
+      if (!res.ok || data.error) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+    
+      const rawText = data.content?.[0]?.text;
+      if (!rawText) throw new Error('Empty response from API: ' + JSON.stringify(data));
+    
+      const cleaned = rawText.replace(/```json\n?|```\n?/g, '').trim();
+      const result = JSON.parse(cleaned);
       previousScore = result.overall_score;
 
       loading.classList.remove('visible');
@@ -655,7 +666,12 @@ Feedback: "${feedbackText}"`;
 
     } catch (e) {
       loading.classList.remove('visible');
-      document.getElementById('result-content').innerHTML = `<div class="analysis-card warning"><h4>Something went wrong</h4><p>Could not analyse the feedback. Please try again.</p></div>`;
+      console.error('Analysis error:', e);
+      document.getElementById('result-content').innerHTML = `
+        <div class="analysis-card warning">
+          <h4>Something went wrong</h4>
+          <p>${e.message}</p>
+        </div>`;
       document.getElementById('result-section').classList.add('visible');
     }
   }
