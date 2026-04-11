@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Analyser — Educator Tool</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #F5F0E8;
+    --surface: #FFFFFF;
+    --accent: #C85C2D;
+    --accent-soft: #F2E4DA;
+    --dark: #1C1C1C;
+    --mid: #6B6459;
+    --light: #E8E2D9;
+    --tag-vague: #E8A838;
+    --tag-solution: #C85C2D;
+    --tag-criteria: #4A7C6F;
+    --tag-exploration: #6B5EA8;
+    --tag-much: #2E7BB5;
+    --success: #4A7C6F;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--dark);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  header .logo { font-family: 'DM Serif Display', serif; font-size: 18px; }
+  header .subtitle { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 300; }
+
+  .tags-legend { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .tag-pill {
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+  }
+  .tag-pill.vague { background: var(--tag-vague); }
+  .tag-pill.solution { background: var(--tag-solution); }
+  .tag-pill.criteria { background: var(--tag-criteria); }
+  .tag-pill.exploration { background: var(--tag-exploration); }
+  .tag-pill.much { background: var(--tag-much); }
+
+  .hero {
+    background: var(--dark);
+    color: white;
+    padding: 60px 40px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(26px, 4vw, 44px);
+    line-height: 1.15;
+    max-width: 600px;
+    margin-bottom: 16px;
+  }
+  .hero h1 em { font-style: italic; color: #E8A838; }
+  .hero p { font-size: 15px; color: rgba(255,255,255,0.65); max-width: 520px; line-height: 1.7; font-weight: 300; }
+
+  .main { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .step {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 20px;
+    border: 1px solid var(--light);
+    transition: opacity 0.3s;
+  }
+  .step.disabled { opacity: 0.4; pointer-events: none; }
+
+  .step-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+
+  .step-number {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .step-number.complete { background: var(--success); }
+
+  .step-title { font-family: 'DM Serif Display', serif; font-size: 20px; }
+  .step-desc { font-size: 13px; color: var(--mid); margin-top: 4px; line-height: 1.5; }
+
+  .field-group { margin-bottom: 20px; }
+
+  label {
+    display: block;
+    font-size: 12px; font-weight: 500;
+    color: var(--mid);
+    margin-bottom: 8px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  select, textarea, input[type="text"] {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--dark);
+    background: var(--bg);
+    border: 1.5px solid var(--light);
+    border-radius: 8px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+  select:focus, textarea:focus, input:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 140px; line-height: 1.65; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 640px) {
+    .row-2 { grid-template-columns: 1fr; }
+    header { padding: 16px 20px; }
+    .hero { padding: 40px 20px 70px; }
+    .main { padding: 32px 16px 60px; }
+    .step { padding: 24px 20px; }
+    .tags-legend { display: none; }
+  }
+
+  .hint-text { font-size: 12px; color: var(--mid); margin-top: 6px; line-height: 1.5; font-style: italic; }
+
+  .conditional-field { display: none; }
+  .conditional-field.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 28px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500;
+    cursor: pointer; border: none;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #A84A22; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 24px; flex-wrap: wrap; }
+
+  .char-count { font-size: 12px; color: var(--mid); text-align: right; margin-top: 6px; }
+
+  .context-summary {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 13px; color: var(--mid);
+    display: flex; gap: 20px; flex-wrap: wrap;
+  }
+  .context-item strong { color: var(--dark); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+  .loading { display: none; flex-direction: column; align-items: center; gap: 16px; padding: 40px; text-align: center; }
+  .loading.visible { display: flex; }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--light);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: var(--mid); font-style: italic; }
+
+  .result-section { display: none; margin-top: 32px; }
+  .result-section.visible { display: block; animation: fadeUp 0.4s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-score {
+    background: var(--dark); color: white;
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    display: flex; align-items: center; gap: 24px;
+    margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .score-label { font-size: 12px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .score-value { font-family: 'DM Serif Display', serif; font-size: 48px; line-height: 1; }
+  .score-interpret { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; max-width: 420px; }
+
+  .analysis-card {
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    border-left: 4px solid;
+  }
+  .analysis-card.positive { background: #EEF7F4; border-color: var(--success); }
+  .analysis-card.warning { background: #FEF6EC; border-color: var(--tag-vague); }
+  .analysis-card.problem { background: #FDF0EB; border-color: var(--tag-solution); }
+  .analysis-card.nudge { background: #F0EEF9; border-color: var(--tag-exploration); }
+  .analysis-card.suggested { background: #EAF3F1; border-color: var(--tag-criteria); }
+
+  .analysis-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .analysis-card p { font-size: 14px; color: var(--mid); line-height: 1.65; }
+  .analysis-card p + p { margin-top: 8px; }
+
+  .tags-found { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag-found { padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 500; color: white; }
+
+  .highlight-box {
+    background: var(--accent-soft);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px; line-height: 1.6;
+    color: var(--dark);
+    margin-bottom: 12px;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+  }
+
+  .divider { height: 1px; background: var(--light); margin: 28px 0; }
+
+  .iteration-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-soft); color: var(--accent);
+    padding: 5px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .revise-section { display: none; margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--light); }
+  .revise-section.visible { display: block; }
+  .revise-label { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 8px; }
+  .revise-desc { font-size: 14px; color: var(--mid); line-height: 1.6; margin-bottom: 16px; }
+
+  .reflection-prompt {
+    background: var(--dark); color: white;
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-top: 24px;
+  }
+  .reflection-prompt h3 { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 8px; }
+  .reflection-prompt p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.65; margin-bottom: 16px; }
+  .reflection-prompt textarea { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: white; min-height: 100px; }
+  .reflection-prompt textarea::placeholder { color: rgba(255,255,255,0.3); }
+  .reflection-prompt textarea:focus { border-color: var(--tag-vague); }
+
+  .reset-btn {
+    background: transparent; border: none;
+    color: var(--mid);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; cursor: pointer;
+    text-decoration: underline; padding: 8px 0;
+  }
+  .reset-btn:hover { color: var(--dark); }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6459' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px; cursor: pointer;
+  }
+
+  .suggested-rewrite {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 14px; line-height: 1.7;
+    color: var(--dark);
+    margin: 12px 0;
+    border: 1.5px solid var(--tag-criteria);
+  }
+
+  .explanation-item {
+    display: flex; gap: 12px;
+    margin-bottom: 10px;
+    font-size: 13px; line-height: 1.6;
+    color: var(--mid);
+  }
+  .explanation-item::before { content: '→'; color: var(--tag-criteria); font-weight: 600; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Feedback Analyser</div>
+    <div class="subtitle">A thinking tool for educators</div>
+  </div>
+  <div class="tags-legend">
+    <span class="tag-pill vague">Too vague</span>
+    <span class="tag-pill solution">Gives away solution</span>
+    <span class="tag-pill criteria">No criteria</span>
+    <span class="tag-pill exploration">Discourages exploration</span>
+    <span class="tag-pill much">Too much at once</span>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Is your feedback <em>enabling</em> learning — or replacing it?</h1>
+  <p>Write a piece of feedback you would give a student. This tool will analyse it against five patterns that quietly undermine learning — and help you sharpen it.</p>
+</div>
+
+<div class="main">
+
+  <!-- Step 1 -->
+  <div class="step" id="step1">
+    <div class="step-header">
+      <div class="step-number" id="step1-num">1</div>
+      <div>
+        <div class="step-title">Set the context</div>
+        <div class="step-desc">The more specific the context, the more useful the analysis.</div>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="field-group">
+        <label>Feedback format</label>
+        <select id="format" onchange="handleFormatChange()">
+          <option value="">Select format</option>
+          <option value="Annotated written feedback">Annotated written feedback</option>
+          <option value="Mentoring by appointment (1-on-1)">Mentoring by appointment</option>
+          <option value="Group review">Group review</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>What was the student doing?</label>
+        <select id="student-activity">
+          <option value="">Select</option>
+          <option value="Exploring — trying things out, no fixed direction yet">Exploring</option>
+          <option value="Developing — building on a chosen direction, getting into detail">Developing</option>
+          <option value="Presenting — sharing and explaining their work">Presenting</option>
+          <option value="Reflecting — looking back at their process or outcome">Reflecting</option>
+          <option value="Practising — applying a specific skill or concept in a task">Practising a skill or concept</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="field-group">
+        <label>Project phase <span style="font-weight:300;text-transform:none;font-size:11px">(optional)</span></label>
+        <select id="phase">
+          <option value="Not applicable">Not applicable</option>
+          <option value="Research and analysis">Research and analysis</option>
+          <option value="Ideation">Ideation</option>
+          <option value="Concept development">Concept development</option>
+          <option value="Design development">Design development</option>
+          <option value="Final review">Final review</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>How much work did the student show?</label>
+        <select id="work-shown">
+          <option value="">Select</option>
+          <option value="Complete work">Complete work</option>
+          <option value="Partial work — something to respond to">Partial work</option>
+          <option value="Very early work — just starting out">Very early work</option>
+          <option value="Nothing yet — the student came without work">Nothing yet</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>What was the student working on?</label>
+      <input type="text" id="context" placeholder="e.g. A research board for a spatial design project exploring user behaviour in public spaces" maxlength="250">
+      <div class="hint-text">What were they making? What was the task focus? What brief or concept were they responding to?</div>
+    </div>
+
+    <div class="conditional-field" id="field-mentoring">
+      <div class="field-group">
+        <label>What did the student say about their work?</label>
+        <input type="text" id="student-said" placeholder="e.g. Said they were unsure about the direction, or felt confident about the research" maxlength="200">
+        <div class="hint-text">Even a word or two helps — this shapes how the feedback should land.</div>
+      </div>
+    </div>
+
+    <div class="conditional-field" id="field-group">
+      <div class="field-group">
+        <label>What did you observe across the room?</label>
+        <input type="text" id="room-observation" placeholder="e.g. Most students had variations of the same idea, very few had pushed into different directions" maxlength="200">
+        <div class="hint-text">What pattern were you seeing across the work in the room?</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goToStep2()">Continue</button>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step disabled" id="step2">
+    <div class="step-header">
+      <div class="step-number" id="step2-num">2</div>
+      <div>
+        <div class="step-title">Write your feedback</div>
+        <div class="step-desc">Write exactly what you would say or write to this student. Do not edit yourself — write it as you naturally would.</div>
+      </div>
+    </div>
+
+    <div id="context-summary-box" class="context-summary" style="display:none"></div>
+
+    <div class="field-group">
+      <label>Your feedback</label>
+      <textarea id="feedback-input" placeholder="Write your feedback here..." oninput="updateCharCount()"></textarea>
+      <div class="char-count"><span id="char-count">0</span> characters</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="analyse-btn" onclick="analyseFeedback()" disabled>Analyse my feedback</button>
+      <button class="reset-btn" onclick="resetAll()">Start over</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loading-text">Reading your feedback carefully...</div>
+    </div>
+
+    <div class="result-section" id="result-section">
+      <div class="divider"></div>
+      <div id="result-content"></div>
+
+      <div class="revise-section" id="revise-section">
+        <div class="revise-label">Try a revision</div>
+        <div class="revise-desc">Based on the analysis above, rewrite your feedback. Try to address the patterns that were flagged. There is no perfect version — just a better one.</div>
+        <textarea id="revision-input" placeholder="Write your revised feedback here..." oninput="updateRevisionCount()"></textarea>
+        <div class="char-count"><span id="revision-count">0</span> characters</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="analyseRevision()">Analyse revision</button>
+        </div>
+      </div>
+
+      <div class="reflection-prompt" id="reflection-section" style="display:none">
+        <h3>Before you go</h3>
+        <p>Based on what you worked through today — what is one thing you will do differently in your next feedback session?</p>
+        <textarea placeholder="Write your intention here..."></textarea>
+        <div style="margin-top:16px">
+          <button class="reset-btn" style="color:rgba(255,255,255,0.35)" onclick="resetAll()">Analyse another piece of feedback</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let iterationCount = 0;
+  let contextData = {};
+  let previousScore = null;
+
+  function handleFormatChange() {
+    const format = document.getElementById('format').value;
+    document.getElementById('field-mentoring').classList.toggle('visible', format.includes('Mentoring'));
+    document.getElementById('field-group').classList.toggle('visible', format.includes('Group'));
+  }
+
+  function goToStep2() {
+    const format = document.getElementById('format').value;
+    const activity = document.getElementById('student-activity').value;
+    const context = document.getElementById('context').value.trim();
+    const workShown = document.getElementById('work-shown').value;
+
+    if (!format || !activity || !context || !workShown) {
+      alert('Please fill in all required fields before continuing.');
+      return;
+    }
+
+    const phase = document.getElementById('phase').value;
+    const studentSaid = document.getElementById('student-said') ? document.getElementById('student-said').value.trim() : '';
+    const roomObs = document.getElementById('room-observation') ? document.getElementById('room-observation').value.trim() : '';
+
+    contextData = { format, activity, phase, context, workShown, studentSaid, roomObs };
+
+    document.getElementById('step1').classList.add('disabled');
+    document.getElementById('step1-num').classList.add('complete');
+    document.getElementById('step1-num').innerHTML = '✓';
+
+    const step2 = document.getElementById('step2');
+    step2.classList.remove('disabled');
+
+    const summaryBox = document.getElementById('context-summary-box');
+    summaryBox.style.display = 'flex';
+    let html = `
+      <div class="context-item"><strong>Format</strong>${format}</div>
+      <div class="context-item"><strong>Student was</strong>${activity.split(' —')[0]}</div>
+      <div class="context-item"><strong>Work shown</strong>${workShown.split(' —')[0]}</div>
+    `;
+    if (phase !== 'Not applicable') html += `<div class="context-item"><strong>Phase</strong>${phase}</div>`;
+    if (studentSaid) html += `<div class="context-item"><strong>Student said</strong>${studentSaid}</div>`;
+    if (roomObs) html += `<div class="context-item"><strong>Room observation</strong>${roomObs}</div>`;
+    summaryBox.innerHTML = html;
+
+    step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('feedback-input').focus();
+  }
+
+  function updateCharCount() {
+    const val = document.getElementById('feedback-input').value;
+    document.getElementById('char-count').textContent = val.length;
+    document.getElementById('analyse-btn').disabled = val.trim().length < 20;
+  }
+
+  function updateRevisionCount() {
+    const val = document.getElementById('revision-input').value;
+    document.getElementById('revision-count').textContent = val.length;
+  }
+
+  async function analyseFeedback() {
+    const feedback = document.getElementById('feedback-input').value.trim();
+    if (!feedback) return;
+    iterationCount = 1;
+    previousScore = null;
+    await runAnalysis(feedback, false, false);
+  }
+
+  async function analyseRevision() {
+    const revision = document.getElementById('revision-input').value.trim();
+    if (!revision) return;
+    iterationCount++;
+    await runAnalysis(revision, true, iterationCount >= 3);
+  }
+
+  function buildSystemPrompt(isRevision, isThird) {
+    const formatNote = contextData.format.includes('Mentoring')
+      ? 'This is a 1-on-1 mentoring session. Pay attention to: whether questions are being asked, whether the student\'s own thinking is being invited before the teacher responds, whether the teacher is doing the thinking for the student.'
+      : contextData.format.includes('Group')
+      ? 'This is a group review. Pay attention to: whether the feedback travels to the whole room or stays locked to one student, whether it is framed so others can learn from it, whether it builds shared understanding or becomes a public 1-on-1.'
+      : 'This is annotated written feedback. Pay attention to: whether the written language is specific enough to act on without the teacher present to explain, whether criteria are visible, whether the student knows what to do next.';
+
+    const nudgeBlock = isRevision && !isThird
+      ? `"nudges": ["<short curious non-prescriptive nudge about what might still be going on for this learner — could touch on conceptual transfer, peer learning, confidence, or readiness. Phrased as a possibility not a diagnosis.>", "<a second gentle reflective question for the teacher to sit with>"],`
+      : '';
+
+    const rewriteBlock = isThird
+      ? `"suggested_rewrite": "<a suggested version of the feedback addressing the main problems — one possibility not the only answer>", "rewrite_explanations": ["<explanation of one specific choice made in the rewrite and why>", "<explanation of another choice>", "<optional third explanation>"],`
+      : '';
+
+    return `You are an expert learning designer and educator coach. You analyse teacher feedback for quality problems using five tags.
+
+Tags:
+1. TOO VAGUE — unclear language that could mean anything
+2. GIVES AWAY THE SOLUTION — removes student agency by deciding for them
+3. NO CRITERIA — judgment without naming the standard
+4. DISCOURAGES EXPLORATION — shuts down possibilities, creates anxiety
+5. TOO MUCH AT ONCE — too many issues addressed, overwhelming
+
+${formatNote}
+
+Return ONLY valid JSON:
+{
+  "overall_score": <0-100>,
+  "overall_interpretation": "<2-3 honest sentences>",
+  "tags_found": [<tag names>],
+  "what_works": "<what is genuinely working or 'Nothing stands out as effective yet'>",
+  "problems": [{"tag": "<name>", "quote": "<exact phrase max 10 words>", "why": "<why it is a problem>", "impact": "<effect on learner>"}],
+  "one_key_shift": "<single most important change>",
+  ${nudgeBlock}
+  ${rewriteBlock}
+  "improvement_from_previous": "${isRevision ? '<honest comparison to previous version>' : 'N/A'}"
+}`;
+  }
+
+  async function runAnalysis(feedbackText, isRevision, isThird) {
+    const loading = document.getElementById('loading');
+    document.getElementById('loading-text').textContent = isThird
+      ? 'Preparing a suggested rewrite...'
+      : isRevision ? 'Comparing to your previous version...'
+      : 'Reading your feedback carefully...';
+
+    loading.classList.add('visible');
+    document.getElementById('result-section').classList.remove('visible');
+
+    const userMsg = `Analyse this feedback.
+
+Context:
+- Format: ${contextData.format}
+- Student was: ${contextData.activity}
+- Phase: ${contextData.phase}
+- Work shown: ${contextData.workShown}
+- Student context: ${contextData.context}
+${contextData.studentSaid ? `- Student said: ${contextData.studentSaid}` : ''}
+${contextData.roomObs ? `- Room observation: ${contextData.roomObs}` : ''}
+${isRevision ? `- Revision #${iterationCount}. Previous score: ${previousScore}/100.` : ''}
+
+Feedback: "${feedbackText}"`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1200,
+          system: buildSystemPrompt(isRevision, isThird),
+          messages: [{ role: 'user', content: userMsg }]
+        })
+      });
+
+      const data = await res.json();
+      const result = JSON.parse(data.content[0].text.replace(/```json|```/g, '').trim());
+      previousScore = result.overall_score;
+
+      loading.classList.remove('visible');
+      renderResult(result, isRevision, isThird);
+      document.getElementById('result-section').classList.add('visible');
+
+      const revise = document.getElementById('revise-section');
+      const reflect = document.getElementById('reflection-section');
+
+      if (isThird) {
+        revise.classList.remove('visible');
+        reflect.style.display = 'block';
+      } else {
+        revise.classList.add('visible');
+        reflect.style.display = 'none';
+        document.getElementById('revision-input').value = '';
+        document.getElementById('revision-count').textContent = '0';
+      }
+
+      document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (e) {
+      loading.classList.remove('visible');
+      document.getElementById('result-content').innerHTML = `<div class="analysis-card warning"><h4>Something went wrong</h4><p>Could not analyse the feedback. Please try again.</p></div>`;
+      document.getElementById('result-section').classList.add('visible');
+    }
+  }
+
+  function renderResult(result, isRevision, isThird) {
+    const colors = {
+      'TOO VAGUE': 'var(--tag-vague)',
+      'GIVES AWAY THE SOLUTION': 'var(--tag-solution)',
+      'NO CRITERIA': 'var(--tag-criteria)',
+      'DISCOURAGES EXPLORATION': 'var(--tag-exploration)',
+      'TOO MUCH AT ONCE': 'var(--tag-much)'
+    };
+
+    const scoreColor = result.overall_score >= 70 ? 'var(--success)'
+      : result.overall_score >= 45 ? 'var(--tag-vague)'
+      : 'var(--tag-solution)';
+
+    let html = '';
+
+    if (isRevision) html += `<div class="iteration-badge">✏ Revision ${iterationCount}</div>`;
+
+    html += `<div class="result-score">
+      <div>
+        <div class="score-label">Feedback quality</div>
+        <div class="score-value" style="color:${scoreColor}">${result.overall_score}<span style="font-size:22px;color:rgba(255,255,255,0.35)">/100</span></div>
+      </div>
+      <div class="score-interpret">${result.overall_interpretation}</div>
+    </div>`;
+
+    if (isRevision && result.improvement_from_previous !== 'N/A') {
+      html += `<div class="analysis-card warning"><h4>📊 Compared to your previous version</h4><p>${result.improvement_from_previous}</p></div>`;
+    }
+
+    if (result.what_works && !result.what_works.includes('Nothing stands out')) {
+      html += `<div class="analysis-card positive"><h4>✓ What is working</h4><p>${result.what_works}</p></div>`;
+    }
+
+    if (result.tags_found && result.tags_found.length > 0) {
+      html += `<div class="analysis-card problem"><h4>Patterns found</h4><div class="tags-found">`;
+      result.tags_found.forEach(t => html += `<span class="tag-found" style="background:${colors[t] || '#888'}">${t}</span>`);
+      html += `</div></div>`;
+    }
+
+    if (result.problems) {
+      result.problems.forEach(p => {
+        html += `<div class="analysis-card warning">
+          <h4><span class="tag-found" style="background:${colors[p.tag] || '#888'}">${p.tag}</span></h4>
+          ${p.quote ? `<div class="highlight-box">"${p.quote}"</div>` : ''}
+          <p><strong>Why this is a problem:</strong> ${p.why}</p>
+          <p style="margin-top:8px"><strong>Impact on learner:</strong> ${p.impact}</p>
+        </div>`;
+      });
+    }
+
+    if (!result.tags_found || result.tags_found.length === 0) {
+      html += `<div class="analysis-card positive"><h4>✓ No major patterns found</h4><p>This feedback does not trigger any of the five problem patterns. It appears specific, grounded in criteria, and leaves thinking with the learner.</p></div>`;
+    }
+
+    html += `<div class="analysis-card positive" style="border-color:var(--accent);background:var(--accent-soft)">
+      <h4 style="color:var(--accent)">→ The one shift that matters most</h4>
+      <p>${result.one_key_shift}</p>
+    </div>`;
+
+    if (isRevision && !isThird && result.nudges) {
+      html += `<div class="analysis-card nudge">
+        <h4 style="color:var(--tag-exploration)">Something to sit with</h4>`;
+      result.nudges.forEach(n => html += `<p style="margin-bottom:10px">— ${n}</p>`);
+      html += `</div>`;
+    }
+
+    if (isThird && result.suggested_rewrite) {
+      html += `<div class="analysis-card suggested">
+        <h4 style="color:var(--tag-criteria)">✦ One way this could be written</h4>
+        <p style="margin-bottom:12px;font-size:13px">This is a possibility, not the only answer. Notice what changed and why.</p>
+        <div class="suggested-rewrite">"${result.suggested_rewrite}"</div>
+        ${result.rewrite_explanations ? result.rewrite_explanations.map(e => `<div class="explanation-item">${e}</div>`).join('') : ''}
+      </div>`;
+    }
+
+    document.getElementById('result-content').innerHTML = html;
+  }
+
+  function resetAll() {
+    iterationCount = 0; contextData = {}; previousScore = null;
+    ['format','student-activity','work-shown'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('phase').value = 'Not applicable';
+    ['context','student-said','room-observation','feedback-input','revision-input'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+    document.getElementById('char-count').textContent = '0';
+    document.getElementById('revision-count').textContent = '0';
+    document.getElementById('analyse-btn').disabled = true;
+    document.getElementById('field-mentoring').classList.remove('visible');
+    document.getElementById('field-group').classList.remove('visible');
+    document.getElementById('step1').classList.remove('disabled');
+    document.getElementById('step1-num').classList.remove('complete');
+    document.getElementById('step1-num').innerHTML = '1';
+    document.getElementById('step2').classList.add('disabled');
+    document.getElementById('context-summary-box').style.display = 'none';
+    document.getElementById('result-section').classList.remove('visible');
+    document.getElementById('loading').classList.remove('visible');
+    document.getElementById('revise-section').classList.remove('visible');
+    document.getElementById('reflection-section').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
