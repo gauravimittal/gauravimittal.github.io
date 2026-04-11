@@ -215,11 +215,6 @@
             currentYearSpan.textContent = new Date().getFullYear();
         }
 
-        // --- DEVELOPER BYPASS ---
-        // Change this variable to TRUE while developing locally so you can actually see your website!
-        // Set it back to FALSE before deploying to production.
-        const isDevelopingLocally = true; 
-
         // Fetch user's IP location
         fetch('https://api.country.is/')
             .then(response => {
@@ -231,8 +226,7 @@
             .then(data => {
                 const userCountry = data.country;
 
-                // Check restriction (bypassed if isDevelopingLocally is true)
-                if (userCountry === 'IN' && !isDevelopingLocally) {
+                if (userCountry === 'IN') {
                     restrictedMessage.classList.remove('hidden');
                     contentDiv.innerHTML = ''; // This clears the DOM entirely, hiding your tabs
                     document.body.style.overflow = 'hidden';
