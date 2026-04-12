@@ -226,15 +226,15 @@
             .then(data => {
                 const userCountry = data.country;
 
-                // if (userCountry === 'IN') {
-                //     restrictedMessage.classList.remove('hidden');
-                //     contentDiv.innerHTML = ''; // This clears the DOM entirely, hiding your tabs
-                //     document.body.style.overflow = 'hidden';
-                // } else {
+                if (userCountry === 'IN') {
+                    restrictedMessage.classList.remove('hidden');
+                    contentDiv.innerHTML = ''; // This clears the DOM entirely, hiding your tabs
+                    document.body.style.overflow = 'hidden';
+                } else {
                     // Show content normally
                     contentDiv.classList.remove('hidden');
                     document.body.style.overflow = 'auto'; 
-                //}
+                }
             })
             .catch(error => {
                 console.error('Geolocation failed or API error:', error);
