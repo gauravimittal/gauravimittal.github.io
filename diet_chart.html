@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diabetic Food Chart — Indian Meals in Almere</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF7F2;
+    --card: #FFFFFF;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --accent-dark: #1B4332;
+    --warn: #E07A5F;
+    --warn-light: #FFF1EC;
+    --info: #457B9D;
+    --info-light: #E8F0F5;
+    --text: #2C2C2C;
+    --text-muted: #6B6B6B;
+    --border: #E8E2D8;
+    --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, var(--accent) 100%);
+    color: white;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .header p {
+    opacity: 0.85;
+    font-size: 0.95rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .profile-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .profile-tag {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    backdrop-filter: blur(4px);
+  }
+
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  .principles {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--accent);
+  }
+
+  .principles h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--accent-dark);
+    margin-bottom: 14px;
+  }
+
+  .principles ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .principles li {
+    padding: 6px 0;
+    padding-left: 24px;
+    position: relative;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+
+  .principles li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .meal-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+
+  .meal-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .meal-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px 14px;
+    cursor: pointer;
+  }
+
+  .meal-time {
+    background: var(--accent);
+    color: white;
+    border-radius: 10px;
+    padding: 8px 6px;
+    min-width: 64px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+    flex-shrink: 0;
+  }
+
+  .meal-time .time-val {
+    font-size: 1rem;
+    display: block;
+  }
+
+  .meal-info h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    color: var(--accent-dark);
+  }
+
+  .meal-info .meal-purpose {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .meal-body {
+    padding: 0 24px 22px;
+  }
+
+  .meal-section {
+    margin-bottom: 14px;
+  }
+
+  .meal-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .meal-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .option-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .option {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    border: 1px solid var(--border);
+  }
+
+  .option strong {
+    color: var(--accent-dark);
+    font-weight: 600;
+  }
+
+  .option .detail {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-top: 3px;
+  }
+
+  .reflux-tip {
+    background: var(--warn-light);
+    border-left: 3px solid var(--warn);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--warn);
+    margin-top: 10px;
+  }
+
+  .reflux-tip::before {
+    content: '⚠ Reflux tip: ';
+    font-weight: 700;
+  }
+
+  .diabetes-tip {
+    background: var(--info-light);
+    border-left: 3px solid var(--info);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--info);
+    margin-top: 10px;
+  }
+
+  .diabetes-tip::before {
+    content: '🩸 Diabetes tip: ';
+    font-weight: 700;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 24px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--accent-dark);
+    margin: 36px 0 18px;
+    padding-left: 4px;
+  }
+
+  .grocery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .grocery-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .grocery-card h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-dark);
+    margin-bottom: 8px;
+  }
+
+  .grocery-card p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .avoid-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    border-left: 4px solid var(--warn);
+  }
+
+  .avoid-card h3 {
+    font-family: 'DM Serif Display', serif;
+    color: var(--warn);
+    margin-bottom: 12px;
+  }
+
+  .avoid-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .avoid-item {
+    background: var(--warn-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.84rem;
+  }
+
+  .avoid-item strong {
+    display: block;
+    color: var(--warn);
+    font-size: 0.82rem;
+  }
+
+  .footer-note {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .footer-note strong {
+    color: var(--accent-dark);
+  }
+
+  .macros-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .macro-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .macro-carb { background: #FFF3E0; color: #E65100; }
+  .macro-protein { background: #E8F5E9; color: #2E7D32; }
+  .macro-fat { background: #FFF8E1; color: #F57F17; }
+  .macro-fiber { background: #F3E5F5; color: #7B1FA2; }
+
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.6rem; }
+    .grocery-grid { grid-template-columns: 1fr; }
+    .avoid-grid { grid-template-columns: 1fr; }
+    .meal-header { padding: 16px 18px 10px; }
+    .meal-body { padding: 0 18px 18px; }
+    .container { padding: 16px 12px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Daily Food Chart</h1>
+  <p>Diabetes-friendly Indian meals — designed for acid reflux management, weight loss, and steady blood sugar</p>
+  <div class="profile-strip">
+    <span class="profile-tag">Type 2 Diabetes</span>
+    <span class="profile-tag">Metformin 500mg + Dapagliflozin 10mg</span>
+    <span class="profile-tag">Acid Reflux</span>
+    <span class="profile-tag">No Red Meat</span>
+    <span class="profile-tag">No Coriander</span>
+    <span class="profile-tag">Weight Loss Goal</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="principles">
+    <h2>Core Eating Principles</h2>
+    <ul>
+      <li>Eat vegetables & protein FIRST, carbs LAST in every meal — reduces glucose spike by 30-40%</li>
+      <li>6 smaller meals instead of 3 large — prevents reflux AND keeps blood sugar stable</li>
+      <li>Stop eating by 10:30 PM — at least 1.5 hours before sleep for reflux management</li>
+      <li>Drink water between meals, not during — reduces reflux and helps digestion</li>
+      <li>No lying down for 30+ minutes after any meal</li>
+      <li>Dapagliflozin makes you pee more — drink 2.5-3L water daily, spread throughout the day</li>
+      <li>Use mint, cumin, fennel, curry leaves, ajwain for flavour instead of excess chilli (no coriander)</li>
+    </ul>
+  </div>
+
+  <h2 class="section-title">Daily Meal Schedule</h2>
+
+  <!-- MEAL 1: Wake-up -->
+  <div class="meal-card">
+    <div class="meal-header">
+      <div class="meal-time"><span class="time-val">8:30</span>AM</div>
+      <div class="meal-info">
+        <h3>Wake-up Drink</h3>
+        <p class="meal-purpose">Hydrate + gentle metabolism activation</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meal-body">
+      <div class="meal-section">
+        <div class="meal-label">Choose One</div>
+        <div class="option-grid">
+          <div class="option">
+            <strong>Warm water + ½ lemon + pinch of cinnamon</strong>
+            <div class="detail">Cinnamon improves insulin sensitivity. Lemon is alkalizing despite being acidic.</div>
+          </div>
+          <div class="option">
+            <strong>Fenugreek (methi) water</strong>
+            <div class="detail">Soak 1 tsp methi seeds overnight, drink the water in the morning. Proven to lower fasting glucose.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reflux-tip">No tea or coffee on an empty stomach — caffeine relaxes the lower esophageal sphincter and worsens reflux.</div>
+    </div>
+  </div>
+
+  <!-- MEAL 2: Breakfast -->
+  <div class="meal-card">
+    <div class="meal-header">
+      <div class="meal-time"><span class="time-val">9:15</span>AM</div>
+      <div class="meal-info">
+        <h3>Breakfast</h3>
+        <p class="meal-purpose">Protein-heavy start — sets blood sugar tone for the day</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meal-body">
+      <div class="meal-section">
+        <div class="meal-label">Rotate through the week</div>
+        <div class="option-grid">
+          <div class="option">
+            <strong>Option A: Moong dal chilla (2 medium) + mint chutney</strong>
+            <div class="detail">High protein, low GI. Add grated lauki/zucchini into the batter for extra fiber. Use pudina-jeera chutney instead of coriander chutney.</div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~25g</span>
+              <span class="macro-pill macro-protein">Protein ~14g</span>
+              <span class="macro-pill macro-fiber">Fiber ~6g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option B: 2 boiled eggs + 1 small whole wheat toast + ½ avocado</strong>
+            <div class="detail">Avocados are cheap and plentiful at Albert Heijn. The fat slows glucose absorption from the toast.</div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~18g</span>
+              <span class="macro-pill macro-protein">Protein ~16g</span>
+              <span class="macro-pill macro-fat">Fat ~15g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option C: Vegetable oats upma (½ cup steel-cut oats)</strong>
+            <div class="detail">Cook with onion, beans, carrot, curry leaves, mustard seeds. Steel-cut oats have much lower GI than instant oats. Add a boiled egg on the side for protein.</div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~28g</span>
+              <span class="macro-pill macro-protein">Protein ~12g</span>
+              <span class="macro-pill macro-fiber">Fiber ~5g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option D: Besan (chickpea flour) omelette + sautéed spinach</strong>
+            <div class="detail">Whisk besan with turmeric, ajwain, chopped onion, green chilli. High protein, no gluten. Spinach from any Dutch supermarket works perfectly.</div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~20g</span>
+              <span class="macro-pill macro-protein">Protein ~15g</span>
+              <span class="macro-pill macro-fiber">Fiber ~5g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="diabetes-tip">Take Metformin 500mg IN THE MIDDLE of this meal — not before, not after. Sandwich it between bites to reduce GI side effects.</div>
+    </div>
+  </div>
+
+  <!-- MEAL 3: Mid-morning -->
+  <div class="meal-card">
+    <div class="meal-header">
+      <div class="meal-time"><span class="time-val">11:30</span>AM</div>
+      <div class="meal-info">
+        <h3>Mid-Morning Snack</h3>
+        <p class="meal-purpose">Prevent blood sugar dip + manage reflux by keeping stomach from being empty too long</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meal-body">
+      <div class="meal-section">
+        <div class="meal-label">Choose One</div>
+        <div class="option-grid">
+          <div class="option">
+            <strong>Handful of mixed nuts (15-20 pieces)</strong>
+            <div class="detail">Almonds + walnuts + pumpkin seeds. Buy mixed nuts at AH or Jumbo. Almost zero glucose spike, good fats, keeps you full.</div>
+          </div>
+          <div class="option">
+            <strong>1 small apple or pear with 1 tbsp peanut butter</strong>
+            <div class="detail">The fat and protein in peanut butter blunts the fruit sugar spike. Dutch peanut butter (pindakaas) — get the "100% pinda" version without added sugar.</div>
+          </div>
+          <div class="option">
+            <strong>Masala buttermilk (chaas) — 1 glass</strong>
+            <div class="detail">Blend yogurt + water + roasted cumin + black salt + mint. Probiotic, cooling, excellent for reflux. No coriander.</div>
+          </div>
+          <div class="option">
+            <strong>Tea/coffee (if desired) — NOW is the time</strong>
+            <div class="detail">Black tea or coffee with a splash of milk. No sugar — use a tiny bit of stevia if needed. Having it with/after the snack protects the stomach.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEAL 4: Lunch -->
+  <div class="meal-card">
+    <div class="meal-header">
+      <div class="meal-time"><span class="time-val">1:30</span>PM</div>
+      <div class="meal-info">
+        <h3>Lunch — Main Meal</h3>
+        <p class="meal-purpose">Largest meal of the day (but still controlled) — eaten early enough to digest well</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meal-body">
+      <div class="meal-section">
+        <div class="meal-label">Structure: Vegetables first → Protein → Carbs last</div>
+        <div class="option-grid">
+          <div class="option">
+            <strong>Option A: Indian Thali Style</strong>
+            <div class="detail">
+              • 1 katori sabzi (lauki, turai, bhindi, baingan — avoid tomato-heavy gravies for reflux)<br>
+              • 1 katori dal (moong, masoor, or toor — not chana dal, it's harder to digest)<br>
+              • 1.5 small whole wheat roti (not 3-4!)<br>
+              • Side salad: cucumber + carrot + radish with lemon + cumin dressing<br>
+              • Small bowl of plain dahi
+            </div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~45g</span>
+              <span class="macro-pill macro-protein">Protein ~18g</span>
+              <span class="macro-pill macro-fiber">Fiber ~10g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option B: Chicken/Fish Day</strong>
+            <div class="detail">
+              • 120g grilled/baked chicken breast or salmon/mackerel<br>
+              • Use jeera, haldi, black pepper, garlic, lemon marinade (no heavy cream sauces)<br>
+              • 1 roti OR ⅓ cup brown rice<br>
+              • Large portion of sautéed vegetables (broccoli, zucchini, bell pepper)<br>
+              • Raita with cucumber and roasted cumin
+            </div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~35g</span>
+              <span class="macro-pill macro-protein">Protein ~30g</span>
+              <span class="macro-pill macro-fat">Fat ~12g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option C: Bowl Style</strong>
+            <div class="detail">
+              • Base: mixed greens or shredded cabbage<br>
+              • Protein: grilled chicken / baked fish / paneer cubes / boiled chickpeas<br>
+              • Carb: ⅓ cup quinoa or brown rice<br>
+              • Top: roasted seeds, olive oil + lemon dressing, pickled onions<br>
+              • Side: cup of dal soup
+            </div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~35g</span>
+              <span class="macro-pill macro-protein">Protein ~25g</span>
+              <span class="macro-pill macro-fiber">Fiber ~8g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reflux-tip">Keep roti/rice portions small. Large carb loads slow gastric emptying and increase reflux. If still hungry, eat more sabzi/salad instead of another roti.</div>
+      <div class="diabetes-tip">If testing blood sugar: check at 1hr and 2hr after the FIRST bite. Target: under 180 at 1hr, under 140 at 2hr.</div>
+    </div>
+  </div>
+
+  <!-- MEAL 5: Evening snack -->
+  <div class="meal-card">
+    <div class="meal-header">
+      <div class="meal-time"><span class="time-val">5:00</span>PM</div>
+      <div class="meal-info">
+        <h3>Evening Snack</h3>
+        <p class="meal-purpose">Bridge the gap to dinner — prevents overeating at night</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meal-body">
+      <div class="meal-section">
+        <div class="meal-label">Choose One</div>
+        <div class="option-grid">
+          <div class="option">
+            <strong>Roasted chana (chickpeas) — 2 tbsp</strong>
+            <div class="detail">High protein, crunchy, satisfying. Available at any Indian/Toko store in Almere. Add chaat masala (without amchur if reflux is bad).</div>
+          </div>
+          <div class="option">
+            <strong>Sprouts chaat</strong>
+            <div class="detail">Boiled moong sprouts + chopped onion + cucumber + lemon + cumin + chaat masala. High protein, high fiber, very filling.</div>
+          </div>
+          <div class="option">
+            <strong>Veggie sticks with hummus</strong>
+            <div class="detail">Carrot, cucumber, bell pepper sticks with 2-3 tbsp hummus. Hummus is everywhere in Dutch supermarkets and is excellent — chickpea protein + healthy fat.</div>
+          </div>
+          <div class="option">
+            <strong>1 small banana (slightly green) with 5-6 almonds</strong>
+            <div class="detail">Slightly green banana = more resistant starch, lower sugar. Almonds slow the glucose absorption.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reflux-tip">This is a good time for a second tea/coffee if he wants one. Avoid on an empty stomach — have it with or right after the snack.</div>
+    </div>
+  </div>
+
+  <!-- MEAL 6: Dinner -->
+  <div class="meal-card">
+    <div class="meal-header">
+      <div class="meal-time"><span class="time-val">8:00</span>PM</div>
+      <div class="meal-info">
+        <h3>Dinner — Light Meal</h3>
+        <p class="meal-purpose">Lighter than lunch — body needs less fuel, and late heavy meals worsen both reflux and morning glucose</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meal-body">
+      <div class="meal-section">
+        <div class="meal-label">Structure: Protein + vegetables dominant, minimal carbs</div>
+        <div class="option-grid">
+          <div class="option">
+            <strong>Option A: Khichdi night</strong>
+            <div class="detail">
+              • ¼ cup rice + ¼ cup moong dal khichdi (1:1 ratio, so protein matches carbs)<br>
+              • Generous haldi, jeera, ghee tadka (1 tsp ghee is fine)<br>
+              • Side: bottle gourd (lauki) raita or plain dahi<br>
+              • Easy to digest, gentle on stomach — perfect for reflux nights
+            </div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~30g</span>
+              <span class="macro-pill macro-protein">Protein ~12g</span>
+              <span class="macro-pill macro-fiber">Fiber ~4g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option B: Soup + roti</strong>
+            <div class="detail">
+              • Big bowl of dal soup or chicken-vegetable soup (homemade, no cream)<br>
+              • 1 small roti<br>
+              • Soups are excellent for reflux — warm, liquid, easy to digest
+            </div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~28g</span>
+              <span class="macro-pill macro-protein">Protein ~15g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option C: Grilled fish + vegetables</strong>
+            <div class="detail">
+              • Grilled salmon or pangasius (widely available at AH, very affordable)<br>
+              • Large portion roasted/steamed vegetables (broccoli, courgette, beans)<br>
+              • Skip the roti entirely — the protein and fat will keep him satisfied
+            </div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~10g</span>
+              <span class="macro-pill macro-protein">Protein ~28g</span>
+              <span class="macro-pill macro-fat">Fat ~14g</span>
+            </div>
+          </div>
+          <div class="option">
+            <strong>Option D: Paneer/tofu stir-fry</strong>
+            <div class="detail">
+              • 100g paneer or firm tofu with bell peppers, mushrooms, onion<br>
+              • Season with cumin, turmeric, black pepper, a pinch of garam masala<br>
+              • 1 small roti or skip if not too hungry
+            </div>
+            <div class="macros-bar">
+              <span class="macro-pill macro-carb">Carbs ~15g</span>
+              <span class="macro-pill macro-protein">Protein ~22g</span>
+              <span class="macro-pill macro-fat">Fat ~16g</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reflux-tip">Dinner must finish by 10:30 PM at the latest. Elevate the head of the bed slightly (15-20°) — this single change reduces nighttime reflux dramatically.</div>
+      <div class="diabetes-tip">Do NOT take medication with dinner. Take Metformin 500mg + Dapagliflozin 10mg at 10:30 PM with the bedtime snack (warm milk or a few almonds). This timing gives better overnight liver glucose control — metformin peaks around 3-6 AM when the liver is most active.</div>
+    </div>
+  </div>
+
+  <!-- MEAL 7: Before bed -->
+  <div class="meal-card">
+    <div class="meal-header">
+      <div class="meal-time"><span class="time-val">10:30</span>PM</div>
+      <div class="meal-info">
+        <h3>Before-Bed Snack (Optional)</h3>
+        <p class="meal-purpose">Only if hungry — prevents overnight hypoglycemia and morning reflux from empty stomach</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="meal-body">
+      <div class="meal-section">
+        <div class="meal-label">Choose One (keep it tiny)</div>
+        <div class="option-grid">
+          <div class="option">
+            <strong>Small glass of warm milk with a pinch of turmeric</strong>
+            <div class="detail">Haldi doodh — anti-inflammatory, calming, and the protein/fat in milk won't spike blood sugar. No sugar added.</div>
+          </div>
+          <div class="option">
+            <strong>5-6 almonds or walnuts</strong>
+            <div class="detail">Protein + fat, zero glucose impact. Walnuts also support sleep quality due to melatonin content.</div>
+          </div>
+        </div>
+      </div>
+      <div class="reflux-tip">Absolutely no citrus, tomato, mint tea, or chocolate at this hour. Sit upright for at least 20 minutes after this before lying down.</div>
+    </div>
+  </div>
+
+  <!-- SPICY FOOD CRAVING MANAGEMENT -->
+  <h2 class="section-title">Managing Spicy Food Cravings</h2>
+
+  <div class="principles" style="border-left-color: var(--warn);">
+    <h2 style="color: var(--warn);">Spicy Without the Burn</h2>
+    <ul>
+      <li><strong>Use black pepper generously</strong> — gives heat but is actually GOOD for reflux (improves digestive enzyme production)</li>
+      <li><strong>Ajwain (carom seeds)</strong> — adds a sharp, warm flavour and is a natural antacid</li>
+      <li><strong>Cumin (jeera) heavy dishes</strong> — roasted cumin gives a warm, earthy depth that satisfies the craving for bold flavour</li>
+      <li><strong>Mustard seeds + curry leaves tadka</strong> — big flavour, zero reflux trigger</li>
+      <li><strong>Ginger</strong> — anti-inflammatory and actually helps reflux (unlike chilli which worsens it)</li>
+      <li><strong>Small amounts of green chilli are better than red chilli powder</strong> — if he must have chilli, fresh green chilli in small quantity is less irritating than dried red chilli powder</li>
+      <li><strong>Avoid combining spicy + oily + acidic</strong> — it's the combination that really triggers reflux, not mild spice alone</li>
+    </ul>
+  </div>
+
+  <!-- AVOID LIST -->
+  <div class="avoid-card">
+    <h3>Foods to Avoid or Strictly Limit</h3>
+    <div class="avoid-grid">
+      <div class="avoid-item">
+        <strong>Diabetes reasons</strong>
+        White rice (or limit to ⅓ cup), maida products, fruit juices, sugary drinks, potatoes in large amounts, white bread, sweetened yogurt
+      </div>
+      <div class="avoid-item">
+        <strong>Reflux reasons</strong>
+        Tomato-based gravies, raw onion in excess, citrus on empty stomach, carbonated drinks, deep-fried foods, mint tea (relaxes LES), chocolate, very spicy curries
+      </div>
+      <div class="avoid-item">
+        <strong>Weight loss reasons</strong>
+        Ghee beyond 1 tsp/meal, fried snacks (samosa, pakora, chips), multiple rotis, rice + roti in same meal, sweetened chai, biscuits with tea
+      </div>
+      <div class="avoid-item">
+        <strong>Combination danger foods</strong>
+        Biryani (high carb + high fat + delayed spike), naan/kulcha (maida + butter), chole bhature, sweet lassi, mithai/Indian sweets of any kind
+      </div>
+    </div>
+  </div>
+
+  <!-- GROCERY GUIDE -->
+  <h2 class="section-title">Almere Grocery Guide</h2>
+
+  <div class="grocery-grid">
+    <div class="grocery-card">
+      <h4>🏪 Albert Heijn / Jumbo</h4>
+      <p>Salmon, mackerel, pangasius, chicken breast, eggs, avocados, broccoli, courgette, spinach, mixed nuts, pindakaas (100% pinda), hummus, Greek yogurt (Griekse yoghurt — high protein, no sugar), oats, brown rice</p>
+    </div>
+    <div class="grocery-card">
+      <h4>🇮🇳 Indian/Toko Stores</h4>
+      <p>Whole wheat atta, besan, moong dal, masoor dal, toor dal, methi seeds, roasted chana, ajwain, curry leaves, paneer, steel-cut oats, sprouts, ragi flour, chaat masala, black salt</p>
+    </div>
+    <div class="grocery-card">
+      <h4>🥬 Weekly Must-Haves</h4>
+      <p>Lauki (bottle gourd), turai (ridge gourd), bhindi, palak, cucumber, carrots, lemons, ginger, garlic, onions, green chillies, fresh mint, bell peppers, mushrooms</p>
+    </div>
+    <div class="grocery-card">
+      <h4>🏋️ Pantry Staples</h4>
+      <p>Olive oil (cooking), coconut oil (small amounts), apple cider vinegar, cinnamon sticks, turmeric, cumin seeds, mustard seeds, flaxseed powder, chia seeds, quinoa</p>
+    </div>
+  </div>
+
+  <!-- DAILY WATER SCHEDULE -->
+  <div class="principles" style="border-left-color: var(--info);">
+    <h2 style="color: var(--info);">Hydration Schedule (Important with Dapagliflozin)</h2>
+    <ul>
+      <li><strong>8:30 AM</strong> — 1 glass warm water (wake-up drink)</li>
+      <li><strong>10:30 AM</strong> — 1-2 glasses water (between breakfast and snack)</li>
+      <li><strong>12:30 PM</strong> — 1 glass water (30 min before lunch)</li>
+      <li><strong>3:00 PM</strong> — 1-2 glasses water</li>
+      <li><strong>4:30 PM</strong> — 1 glass water (before evening snack)</li>
+      <li><strong>7:00 PM</strong> — 1 glass water (30 min before dinner)</li>
+      <li><strong>9:30 PM</strong> — small sips only (too much water late = nighttime bathroom trips + reflux)</li>
+      <li>Total target: 2.5-3 litres/day — Dapagliflozin pulls water through kidneys, dehydration is a real risk</li>
+    </ul>
+  </div>
+
+  <div class="footer-note">
+    <strong>Disclaimer:</strong> This food chart is for general guidance based on the information discussed. It is not a substitute for advice from a registered dietitian or diabetologist. Portion sizes and food choices should be adjusted based on blood sugar readings, weight progress, and how the body responds. Please share this chart with his doctor for review.
+    <br><br>
+    <strong>The single most impactful habit:</strong> A 15-minute walk after lunch and dinner. This alone can reduce post-meal glucose spikes by 30-50%. Even slow walking works.
+  </div>
+
+</div>
+
+</body>
+</html>
